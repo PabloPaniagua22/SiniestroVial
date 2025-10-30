@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit DetalleSiniestro{% endblock %}
+
+{% block body %}
+    <h1>Edit DetalleSiniestro</h1>
+
+    {{ include('detalle_siniestro/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_detalle_siniestro_index') }}">back to list</a>
+
+    {{ include('detalle_siniestro/_delete_form.html.twig') }}
+{% endblock %}

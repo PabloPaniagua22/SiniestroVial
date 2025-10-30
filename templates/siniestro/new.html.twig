@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Siniestro{% endblock %}
+
+{% block body %}
+    <h1>Create new Siniestro</h1>
+
+    {{ include('siniestro/_form.html.twig') }}
+
+    <a href="{{ path('app_siniestro_index') }}">back to list</a>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}RolPersona index{% endblock %}
+
+{% block body %}
+    <h1>RolPersona index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for rol_persona in rol_personas %}
+            <tr>
+                <td>{{ rol_persona.id }}</td>
+                <td>{{ rol_persona.nombre }}</td>
+                <td>
+                    <a href="{{ path('app_rol_persona_show', {'id': rol_persona.id}) }}">show</a>
+                    <a href="{{ path('app_rol_persona_edit', {'id': rol_persona.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_rol_persona_new') }}">Create new</a>
+{% endblock %}

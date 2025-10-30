@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}DetalleSiniestro index{% endblock %}
+
+{% block body %}
+    <h1>DetalleSiniestro index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>EstadoAlcoholico</th>
+                <th>PorcentajeAlcohol</th>
+                <th>Observaciones</th>
+                <th>RutaDocumento</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for detalle_siniestro in detalle_siniestros %}
+            <tr>
+                <td>{{ detalle_siniestro.id }}</td>
+                <td>{{ detalle_siniestro.estadoAlcoholico }}</td>
+                <td>{{ detalle_siniestro.porcentajeAlcohol }}</td>
+                <td>{{ detalle_siniestro.observaciones }}</td>
+                <td>{{ detalle_siniestro.rutaDocumento }}</td>
+                <td>
+                    <a href="{{ path('app_detalle_siniestro_show', {'id': detalle_siniestro.id}) }}">show</a>
+                    <a href="{{ path('app_detalle_siniestro_edit', {'id': detalle_siniestro.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_detalle_siniestro_new') }}">Create new</a>
+{% endblock %}

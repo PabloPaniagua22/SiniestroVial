@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}DetalleSiniestro{% endblock %}
+
+{% block body %}
+    <h1>DetalleSiniestro</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ detalle_siniestro.id }}</td>
+            </tr>
+            <tr>
+                <th>EstadoAlcoholico</th>
+                <td>{{ detalle_siniestro.estadoAlcoholico }}</td>
+            </tr>
+            <tr>
+                <th>PorcentajeAlcohol</th>
+                <td>{{ detalle_siniestro.porcentajeAlcohol }}</td>
+            </tr>
+            <tr>
+                <th>Observaciones</th>
+                <td>{{ detalle_siniestro.observaciones }}</td>
+            </tr>
+            <tr>
+                <th>RutaDocumento</th>
+                <td>{{ detalle_siniestro.rutaDocumento }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_detalle_siniestro_index') }}">back to list</a>
+
+    <a href="{{ path('app_detalle_siniestro_edit', {'id': detalle_siniestro.id}) }}">edit</a>
+
+    {{ include('detalle_siniestro/_delete_form.html.twig') }}
+{% endblock %}

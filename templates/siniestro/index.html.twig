@@ -1,0 +1,51 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Siniestro index{% endblock %}
+
+{% block body %}
+    <h1>Siniestro index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Fecha</th>
+                <th>Hora</th>
+                <th>Descripcion</th>
+                <th>Severidad</th>
+                <th>Estado</th>
+                <th>Localidad</th>
+                <th>Calle</th>
+                <th>Coordenadas</th>
+                <th>NroActa</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for siniestro in siniestros %}
+            <tr>
+                <td>{{ siniestro.id }}</td>
+                <td>{{ siniestro.fecha ? siniestro.fecha|date('Y-m-d') : '' }}</td>
+                <td>{{ siniestro.hora ? siniestro.hora|date('H:i:s') : '' }}</td>
+                <td>{{ siniestro.descripcion }}</td>
+                <td>{{ siniestro.severidad }}</td>
+                <td>{{ siniestro.estado }}</td>
+                <td>{{ siniestro.localidad }}</td>
+                <td>{{ siniestro.calle }}</td>
+                <td>{{ siniestro.coordenadas }}</td>
+                <td>{{ siniestro.nroActa }}</td>
+                <td>
+                    <a href="{{ path('app_siniestro_show', {'id': siniestro.id}) }}">show</a>
+                    <a href="{{ path('app_siniestro_edit', {'id': siniestro.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="11">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_siniestro_new') }}">Create new</a>
+{% endblock %}

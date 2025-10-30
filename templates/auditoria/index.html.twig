@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Auditoria index{% endblock %}
+
+{% block body %}
+    <h1>Auditoria index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Accion</th>
+                <th>EntidadAfectada</th>
+                <th>FechaHora</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for auditorium in auditorias %}
+            <tr>
+                <td>{{ auditorium.id }}</td>
+                <td>{{ auditorium.accion }}</td>
+                <td>{{ auditorium.entidadAfectada }}</td>
+                <td>{{ auditorium.fechaHora ? auditorium.fechaHora|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_auditoria_show', {'id': auditorium.id}) }}">show</a>
+                    <a href="{{ path('app_auditoria_edit', {'id': auditorium.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_auditoria_new') }}">Create new</a>
+{% endblock %}
