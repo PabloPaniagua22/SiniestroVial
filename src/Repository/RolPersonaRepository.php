@@ -15,6 +15,16 @@ class RolPersonaRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, RolPersona::class);
     }
+    public function getCantidadPorRol(): array
+    {
+        return $this->createQueryBuilder('r')
+            ->select('r.nombre AS rol, COUNT(ds.id) AS cantidad')
+            ->leftJoin('r.detalleSiniestros', 'ds')
+            ->groupBy('r.id')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
 
     //    /**
     //     * @return RolPersona[] Returns an array of RolPersona objects

@@ -15,6 +15,14 @@ class DetalleSiniestroRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, DetalleSiniestro::class);
     }
+    public function getEstadoAlcoholico(): array
+    {
+        return $this->createQueryBuilder('d')
+            ->select('d.estadoAlcoholico AS estado, COUNT(d.id) AS cantidad')
+            ->groupBy('d.estadoAlcoholico')
+            ->getQuery()
+            ->getArrayResult();
+    }
 
     //    /**
     //     * @return DetalleSiniestro[] Returns an array of DetalleSiniestro objects

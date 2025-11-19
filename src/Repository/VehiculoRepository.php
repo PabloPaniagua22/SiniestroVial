@@ -15,6 +15,15 @@ class VehiculoRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Vehiculo::class);
     }
+    public function getTiposVehiculos(): array
+    {
+        return $this->createQueryBuilder('v')
+            ->select('v.tipo AS tipo, COUNT(v.id) AS cantidad')
+            ->groupBy('v.tipo')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
 
 //    /**
 //     * @return Vehiculo[] Returns an array of Vehiculo objects

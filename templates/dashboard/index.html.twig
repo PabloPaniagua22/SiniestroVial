@@ -10,6 +10,24 @@
         <button class="btn btn-success me-2" id="exportExcel">📗 Exportar a Excel</button>
         <button class="btn btn-danger" id="exportPDF">📕 Exportar a PDF</button>
     </div>
+    <div class="card p-3 mb-4 shadow-sm">
+        <h5>Filtrar por Fecha</h5>
+        <div class="row">
+            <div class="col-md-4">
+                <label>Desde:</label>
+                <input type="date" id="fechaDesde" class="form-control">
+            </div>
+
+            <div class="col-md-4">
+                <label>Hasta:</label>
+                <input type="date" id="fechaHasta" class="form-control">
+            </div>
+
+            <div class="col-md-4 d-flex align-items-end">
+                <button class="btn btn-primary w-100" id="btnFiltrar">Filtrar</button>
+            </div>
+        </div>
+    </div>
 
     <div class="row g-4">
         <div class="col-md-6">
@@ -47,191 +65,203 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
 <script>
-let data = {}; // 🔹 Variable global accesible por todos
+    /* VARIABLES GLOBALES*/
 
-document.addEventListener("DOMContentLoaded", async () => {
-    try {
-        const response = await fetch("/api/reportes");
-        data = await response.json(); // 🔹 Guardamos globalmente los datos
+    let data = {};
+    let charts = {}; // para destruir y recrear gráficos dinámicamente
 
-        const siniestros = data.siniestros || [];
-        const roles = data.roles || [];
-        const alcohol = data.alcohol || [];
-        const vehiculos = data.vehiculos || [];
+        /*FUNCIÓN PRINCIPAL PARA CARGAR REPORTES*/
+    async function cargarReportes() {
+        try {
+            const desde = document.getElementById("fechaDesde")?.value || "";
+            const hasta = document.getElementById("fechaHasta")?.value || "";
 
-        // ========== Siniestros por mes ==========
+            const query = new URLSearchParams();
+            if (desde) query.append("desde", desde);
+            if (hasta) query.append("hasta", hasta);
+
+            const response = await fetch("/api/reportes?" + query.toString());
+            data = await response.json();
+
+            renderCharts();
+
+        } catch (error) {
+            console.error("Error cargando reportes:", error);
+        }
+    }
+
+    /* INICIALIZAR AL CARGAR LA PÁGINA */
+    document.addEventListener("DOMContentLoaded", cargarReportes);
+
+    /*BOTÓN FILTRAR POR FECHA */
+    document.getElementById("btnFiltrar")?.addEventListener("click", cargarReportes);
+
+    /* RENDERIZAR GRÁFICOS CON CHART.JS */
+    function renderCharts() {
+
+        // Si existen gráficos previos → destruirlos
+        Object.values(charts).forEach(chart => chart.destroy());
+
+        // Datos
         const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
         const siniestrosData = Array(12).fill(0);
-        siniestros.forEach(s => {
-            if (s.mes && s.cantidad) siniestrosData[s.mes - 1] = s.cantidad;
+
+        (data.siniestros || []).forEach(s => {
+            if (s.mes) siniestrosData[s.mes - 1] = s.cantidad;
         });
 
-        new Chart(document.getElementById("siniestrosMesChart"), {
+        // Siniestros por mes 
+        charts.siniestros = new Chart(document.getElementById("siniestrosMesChart"), {
             type: "bar",
             data: {
                 labels: meses,
                 datasets: [{
                     label: "Cantidad de Siniestros",
-                    data: siniestrosData,
-                    backgroundColor: "rgba(54, 162, 235, 0.6)"
+                    data: siniestrosData
                 }]
             }
         });
 
-        // ========== Roles ==========
-        new Chart(document.getElementById("rolesChart"), {
+        // Roles
+        charts.roles = new Chart(document.getElementById("rolesChart"), {
             type: "pie",
             data: {
-                labels: roles.map(r => r.rol),
+                labels: data.roles.map(r => r.rol),
                 datasets: [{
-                    data: roles.map(r => r.cantidad),
-                    backgroundColor: ["#36A2EB","#FF6384","#FFCE56"]
+                    data: data.roles.map(r => r.cantidad)
                 }]
             }
         });
 
-        // ========== Estado alcohólico ==========
-        new Chart(document.getElementById("alcoholChart"), {
+        // Estado alcohólico
+        charts.alcohol = new Chart(document.getElementById("alcoholChart"), {
             type: "doughnut",
             data: {
-                labels: alcohol.map(a => a.estado),
+                labels: data.alcohol.map(a => a.estado),
                 datasets: [{
-                    data: alcohol.map(a => a.cantidad),
-                    backgroundColor: ["#FF6384", "#36A2EB"]
+                    data: data.alcohol.map(a => a.cantidad)
                 }]
             }
         });
 
-        // ========== Tipos de vehículos ==========
-        new Chart(document.getElementById("vehiculosChart"), {
+        // Vehículos 
+        charts.vehiculos = new Chart(document.getElementById("vehiculosChart"), {
             type: "polarArea",
             data: {
-                labels: vehiculos.map(v => v.tipo),
+                labels: data.vehiculos.map(v => v.tipo),
                 datasets: [{
-                    data: vehiculos.map(v => v.cantidad),
-                    backgroundColor: ["#4BC0C0","#FF6384","#FF9F40","#9966FF"]
+                    data: data.vehiculos.map(v => v.cantidad)
                 }]
             }
         });
-
-    } catch (error) {
-        console.error("Error cargando reportes:", error);
     }
-});
 
-// ✅ Exportar a Excel detallado
-document.getElementById("exportExcel").addEventListener("click", () => {
-    try {
-        if (!data.siniestros) throw new Error("No hay datos cargados");
+    /* EXPORTAR A EXCEL CON FILTRO DE FECHA */
+    document.getElementById("exportExcel").addEventListener("click", () => {
+        try {
+            if (!data.siniestros) throw new Error("No hay datos cargados");
 
-        const fecha = new Date().toLocaleString("es-AR");
-        const wb = XLSX.utils.book_new();
+            const fechaGen = new Date().toLocaleString("es-AR");
+            const desde = document.getElementById("fechaDesde").value;
+            const hasta = document.getElementById("fechaHasta").value;
 
-        // Hoja 1: Siniestros
-        const wsSiniestros = [
-            ["Reporte de Siniestros Viales"],
-            ["Generado el:", fecha],
-            [],
-            ["Mes", "Cantidad de Siniestros"]
-        ];
-        data.siniestros.forEach(s => wsSiniestros.push([s.mes, s.cantidad]));
-        wsSiniestros.push([]);
-        const total = data.siniestros.reduce((acc, s) => acc + s.cantidad, 0);
-        wsSiniestros.push(["Total", total]);
-        const ws1 = XLSX.utils.aoa_to_sheet(wsSiniestros);
-        XLSX.utils.book_append_sheet(wb, ws1, "Siniestros");
+            const rango = (desde && hasta) ? `${desde} → ${hasta}` : "Sin filtro";
 
-        // Hoja 2: Roles
-        const wsRoles = [["Rol", "Cantidad"]];
-        data.roles.forEach(r => wsRoles.push([r.rol, r.cantidad]));
-        const ws2 = XLSX.utils.aoa_to_sheet(wsRoles);
-        XLSX.utils.book_append_sheet(wb, ws2, "Roles");
+            const wb = XLSX.utils.book_new();
 
-        // Hoja 3: Estado Alcohólico
-        const wsAlcohol = [["Estado", "Cantidad"]];
-        data.alcohol.forEach(a => wsAlcohol.push([a.estado, a.cantidad]));
-        const ws3 = XLSX.utils.aoa_to_sheet(wsAlcohol);
-        XLSX.utils.book_append_sheet(wb, ws3, "Estado Alcohólico");
+            // Hoja 1: siniestros
+            const wsSiniestros = [
+                ["Reporte de Siniestros Viales"],
+                ["Generado:", fechaGen],
+                ["Rango aplicado:", rango],
+                [],
+                ["Mes", "Cantidad"]
+            ];
 
-        // Hoja 4: Vehículos
-        const wsVehiculos = [["Tipo", "Cantidad"]];
-        data.vehiculos.forEach(v => wsVehiculos.push([v.tipo, v.cantidad]));
-        const ws4 = XLSX.utils.aoa_to_sheet(wsVehiculos);
-        XLSX.utils.book_append_sheet(wb, ws4, "Vehículos");
+            data.siniestros.forEach(s => wsSiniestros.push([s.mes, s.cantidad]));
 
-        XLSX.writeFile(wb, "Reporte_Siniestros_Viales.xlsx");
-    } catch (err) {
-        alert("⚠️ No se pudo exportar a Excel: " + err.message);
-        console.error(err);
-    }
-});
+            const ws1 = XLSX.utils.aoa_to_sheet(wsSiniestros);
+            XLSX.utils.book_append_sheet(wb, ws1, "Siniestros");
 
-// ✅ Exportar a PDF detallado
-document.getElementById("exportPDF").addEventListener("click", async () => {
-    try {
-        if (!data.siniestros) throw new Error("No hay datos cargados");
+            // Roles
+            const wsRoles = [["Rol", "Cantidad"]];
+            data.roles.forEach(r => wsRoles.push([r.rol, r.cantidad]));
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(wsRoles), "Roles");
 
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF("p", "pt", "a4");
-        const fecha = new Date().toLocaleString("es-AR");
+            // Alcohol
+            const wsAlcohol = [["Estado", "Cantidad"]];
+            data.alcohol.forEach(a => wsAlcohol.push([a.estado, a.cantidad]));
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(wsAlcohol), "Alcohol");
 
-        pdf.setFontSize(18);
-        pdf.text("Reporte de Siniestros Viales", 40, 50);
-        pdf.setFontSize(12);
-        pdf.text(`Generado el ${fecha}`, 40, 70);
+            // Vehículos
+            const wsVehiculos = [["Tipo", "Cantidad"]];
+            data.vehiculos.forEach(v => wsVehiculos.push([v.tipo, v.cantidad]));
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(wsVehiculos), "Vehículos");
 
-        let posY = 110;
-        pdf.setFontSize(14);
-        pdf.text("Resumen por mes:", 40, posY);
-        posY += 10;
+            XLSX.writeFile(wb, "Reporte_Siniestros_Viales.xlsx");
 
-        // Agregar tabla
-        pdf.autoTable({
-            startY: posY + 10,
-            head: [['Mes', 'Cantidad']],
-            body: data.siniestros.map(s => [s.mes, s.cantidad]),
-            styles: { halign: 'center' },
-            headStyles: { fillColor: [54, 162, 235] },
-        });
+        } catch (err) {
+            alert("⚠️ Error al exportar: " + err.message);
+        }
+    });
 
-        // Agregar otras secciones
-        let y = pdf.lastAutoTable.finalY + 30;
-        pdf.setFontSize(14);
-        pdf.text("Distribución de Roles:", 40, y);
-        pdf.autoTable({
-            startY: y + 10,
-            head: [['Rol', 'Cantidad']],
-            body: data.roles.map(r => [r.rol, r.cantidad]),
-            styles: { halign: 'center' },
-            headStyles: { fillColor: [255, 99, 132] },
-        });
+    /* EXPORTAR A PDF CON FILTRO DE FECHA */
+    document.getElementById("exportPDF").addEventListener("click", () => {
+        try {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF("p", "pt", "a4");
 
-        y = pdf.lastAutoTable.finalY + 30;
-        pdf.text("Estado Alcohólico:", 40, y);
-        pdf.autoTable({
-            startY: y + 10,
-            head: [['Estado', 'Cantidad']],
-            body: data.alcohol.map(a => [a.estado, a.cantidad]),
-            styles: { halign: 'center' },
-            headStyles: { fillColor: [255, 206, 86] },
-        });
+            const fechaGen = new Date().toLocaleString("es-AR");
+            const desde = document.getElementById("fechaDesde").value;
+            const hasta = document.getElementById("fechaHasta").value;
+            const rango = (desde && hasta) ? `${desde} → ${hasta}` : "Sin filtro";
 
-        y = pdf.lastAutoTable.finalY + 30;
-        pdf.text("Tipos de Vehículos:", 40, y);
-        pdf.autoTable({
-            startY: y + 10,
-            head: [['Tipo', 'Cantidad']],
-            body: data.vehiculos.map(v => [v.tipo, v.cantidad]),
-            styles: { halign: 'center' },
-            headStyles: { fillColor: [75, 192, 192] },
-        });
+            pdf.setFontSize(18);
+            pdf.text("Reporte de Siniestros Viales", 40, 50);
 
-        pdf.save("Reporte_Siniestros_Viales.pdf");
-    } catch (err) {
-        alert("⚠️ No se pudo exportar a PDF: " + err.message);
-        console.error(err);
-    }
-});
+            pdf.setFontSize(12);
+            pdf.text(`Generado: ${fechaGen}`, 40, 70);
+            pdf.text(`Rango aplicado: ${rango}`, 40, 90);
+
+            let y = 120;
+
+            pdf.autoTable({
+                startY: y,
+                head: [["Mes", "Cantidad"]],
+                body: data.siniestros.map(s => [s.mes, s.cantidad])
+            });
+
+            y = pdf.lastAutoTable.finalY + 20;
+
+            pdf.autoTable({
+                startY: y,
+                head: [["Rol", "Cantidad"]],
+                body: data.roles.map(r => [r.rol, r.cantidad])
+            });
+
+            y = pdf.lastAutoTable.finalY + 20;
+
+            pdf.autoTable({
+                startY: y,
+                head: [["Estado", "Cantidad"]],
+                body: data.alcohol.map(a => [a.estado, a.cantidad])
+            });
+
+            y = pdf.lastAutoTable.finalY + 20;
+
+            pdf.autoTable({
+                startY: y,
+                head: [["Tipo", "Cantidad"]],
+                body: data.vehiculos.map(v => [v.tipo, v.cantidad])
+            });
+
+            pdf.save("Reporte_Siniestros_Viales.pdf");
+
+        } catch (err) {
+            alert("⚠️ No se pudo exportar a PDF");
+        }
+    });
+    
 </script>
 
 {% endblock %}

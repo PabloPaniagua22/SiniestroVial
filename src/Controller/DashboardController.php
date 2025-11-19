@@ -2,57 +2,40 @@
 
 namespace App\Controller;
 
-use Doctrine\DBAL\Connection;
+use App\Repository\SiniestroRepository;
+use App\Repository\RolPersonaRepository;
+use App\Repository\DetalleSiniestroRepository;
+use App\Repository\VehiculoRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 class DashboardController extends AbstractController
 {
     #[Route('/dashboard', name: 'app_dashboard')]
-    public function index(): Response
+    public function index()
     {
         return $this->render('dashboard/index.html.twig');
     }
 
-    #[Route('/api/reportes', name: 'api_reportes')]
-    public function getReportes(Connection $conn): JsonResponse
-    {
-    // 🔹 Siniestros por mes
-    $siniestros = $conn->fetchAllAssociative("
-        SELECT MONTH(fecha) AS mes, COUNT(*) AS cantidad
-        FROM siniestro
-        GROUP BY MONTH(fecha)
-        ORDER BY mes
-    ");
+    #[Route('/api/reportes', name: 'api_reportes', methods: ['GET'])]
+    public function getReportes(
+        Request $request,
+        SiniestroRepository $siniestroRepo,
+        RolPersonaRepository $rolRepo,
+        DetalleSiniestroRepository $detalleRepo,
+        VehiculoRepository $vehiculoRepo
+    ): JsonResponse {
 
-    // 🔹 Roles de persona
-    $roles = $conn->fetchAllAssociative("
-        SELECT nombre AS rol, COUNT(*) AS cantidad
-        FROM rol_persona
-        GROUP BY nombre
-    ");
+        $desde = $request->query->get('desde');
+        $hasta = $request->query->get('hasta');
 
-    // 🔹 Estado alcohólico (solo si existe el campo en detalle_siniestro)
-    $alcohol = $conn->fetchAllAssociative("
-        SELECT estado_alcoholico AS estado, COUNT(*) AS cantidad
-        FROM detalle_siniestro
-        GROUP BY estado_alcoholico
-    ");
-
-    // 🔹 Tipos de vehículo
-    $vehiculos = $conn->fetchAllAssociative("
-        SELECT tipo AS tipo, COUNT(*) AS cantidad
-        FROM vehiculo
-        GROUP BY tipo
-    ");
-
-    return new JsonResponse([
-        'siniestros' => $siniestros,
-        'roles' => $roles,
-        'alcohol' => $alcohol,
-        'vehiculos' => $vehiculos,
-    ]);
+        return new JsonResponse([
+            'siniestros' => $siniestroRepo->getSiniestrosPorMes($desde, $hasta),
+            'roles' => $rolRepo->getCantidadPorRol(),
+            'alcohol' => $detalleRepo->getEstadoAlcoholico(),
+            'vehiculos' => $vehiculoRepo->getTiposVehiculos(),
+        ]);
     }
 }
