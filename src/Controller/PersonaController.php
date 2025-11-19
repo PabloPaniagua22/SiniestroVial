@@ -71,11 +71,27 @@ final class PersonaController extends AbstractController
     #[Route('/{id}', name: 'app_persona_delete', methods: ['POST'])]
     public function delete(Request $request, Persona $persona, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$persona->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $persona->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($persona);
             $entityManager->flush();
         }
 
         return $this->redirectToRoute('app_persona_index', [], Response::HTTP_SEE_OTHER);
+    }
+    #[Route('/api/personas', name: 'api_personas', methods: ['GET'])]
+    public function apiPersonas(PersonaRepository $personaRepository): Response
+    {
+        $personas = $personaRepository->findAll();
+        $data = [];
+
+        foreach ($personas as $p) {
+            $data[] = [
+                'id' => $p->getId(),
+                'nombre' => $p->getNombre(),
+                'apellido' => $p->getApellido(),
+            ];
+        }
+
+        return $this->json($data);
     }
 }

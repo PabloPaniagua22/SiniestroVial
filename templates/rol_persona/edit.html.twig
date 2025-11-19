@@ -1,13 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit RolPersona{% endblock %}
+{% block title %}Editar Rol Persona{% endblock %}
 
 {% block body %}
-    <h1>Edit RolPersona</h1>
+    <h1>Editar Rol Persona</h1>
 
-    {{ include('rol_persona/_form.html.twig', {'button_label': 'Update'}) }}
+    {{ include('rol_persona/_form.html.twig', {'button_label': 'Actualizar'}) }}
 
-    <a href="{{ path('app_rol_persona_index') }}">back to list</a>
+    <a href="{{ path('app_rol_persona_index') }}">Volver a la lista</a>
 
     {{ include('rol_persona/_delete_form.html.twig') }}
 {% endblock %}

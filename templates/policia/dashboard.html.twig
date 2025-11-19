@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+{% block title %}Panel del Policía{% endblock %}
+{% block body %}
+
+<div class="container mt-5">
+    <h1 class="mb-5 text-center">Panel del Policía</h1>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 text-center">
+        <div class="col">
+            <a href="{{ path('app_siniestro_index') }}" class="btn btn-info btn-lg w-100 py-4 shadow-sm">
+                🚔 <br> Consultar Siniestros
+            </a>
+        </div>
+        <div class="col">
+            <a href="{{ path('app_dashboard') }}" class="btn btn-primary btn-lg w-100 py-4 shadow-sm">
+                📊 <br> Ver Reportes
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

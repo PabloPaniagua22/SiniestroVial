@@ -13,8 +13,8 @@
                 <th>Patente</th>
                 <th>Marca</th>
                 <th>Modelo</th>
-                <th>Anio</th>
-                <th>actions</th>
+                <th>Año</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -27,17 +27,17 @@
                 <td>{{ vehiculo.modelo }}</td>
                 <td>{{ vehiculo.anio }}</td>
                 <td>
-                    <a href="{{ path('app_vehiculo_show', {'id': vehiculo.id}) }}">show</a>
-                    <a href="{{ path('app_vehiculo_edit', {'id': vehiculo.id}) }}">edit</a>
+                    <a href="{{ path('app_vehiculo_show', {'id': vehiculo.id}) }}">Ver</a>
+                    <a href="{{ path('app_vehiculo_edit', {'id': vehiculo.id}) }}">Editar</a>
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="7">no records found</td>
+                <td colspan="7">No se encontraron registros</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('app_vehiculo_new') }}">Create new</a>
+    <a href="{{ path('app_vehiculo_new') }}">Crear nuevo</a>
 {% endblock %}

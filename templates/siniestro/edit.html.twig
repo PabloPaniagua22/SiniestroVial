@@ -1,13 +1,34 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Siniestro{% endblock %}
+{% block title %}
+    {{ siniestro.id ? 'Editar Siniestro' : 'Nuevo Siniestro' }}
+{% endblock %}
 
 {% block body %}
-    <h1>Edit Siniestro</h1>
+<div class="container mt-5">
 
-    {{ include('siniestro/_form.html.twig', {'button_label': 'Update'}) }}
+    <h1 class="text-center mb-4">
+        {{ siniestro.id ? 'Editar Siniestro' : 'Registrar Nuevo Siniestro' }}
+    </h1>
 
-    <a href="{{ path('app_siniestro_index') }}">back to list</a>
+    <div class="card p-4 shadow-sm">
+        {{ include('siniestro/_form.html.twig', { button_label: 'Guardar cambios' }) }}
+    </div>
+    {% for detalle in siniestro.detalleSiniestros %}
+        {% if detalle.rutaDocumento %}
+            <a href="{{ asset('uploads/documentos/' ~ detalle.rutaDocumento) }}" 
+            target="_blank" 
+            class="btn btn-outline-primary my-2">
+                📎 Ver documento del detalle #{{ detalle.id }}
+            </a>
+        {% endif %}
+    {% endfor %}
 
-    {{ include('siniestro/_delete_form.html.twig') }}
+    <div class="d-flex justify-content-between mt-4">
+        <a href="{{ path('app_siniestro_index') }}" class="btn btn-secondary">
+            ⬅️ Volver al listado
+        </a>
+    </div>
+
+</div>
 {% endblock %}

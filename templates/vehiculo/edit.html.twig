@@ -1,13 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Vehiculo{% endblock %}
+{% block title %}Editar Vehiculo{% endblock %}
 
 {% block body %}
-    <h1>Edit Vehiculo</h1>
+    <h1>Editar Vehiculo</h1>
 
-    {{ include('vehiculo/_form.html.twig', {'button_label': 'Update'}) }}
+    {{ include('vehiculo/_form.html.twig', {'button_label': 'Actualizar'}) }}
 
-    <a href="{{ path('app_vehiculo_index') }}">back to list</a>
+    <a href="{{ path('app_vehiculo_index') }}">Volver a la lista</a>
 
     {{ include('vehiculo/_delete_form.html.twig') }}
 {% endblock %}

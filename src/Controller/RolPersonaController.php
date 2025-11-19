@@ -78,4 +78,19 @@ final class RolPersonaController extends AbstractController
 
         return $this->redirectToRoute('app_rol_persona_index', [], Response::HTTP_SEE_OTHER);
     }
+    #[Route('/api/roles', name: 'api_roles', methods: ['GET'])]
+    public function apiRoles(RolPersonaRepository $rolRepo): Response
+    {
+        $roles = $rolRepo->findAll();
+        $data = [];
+
+        foreach ($roles as $r) {
+            $data[] = [
+                'id' => $r->getId(),
+                'nombre' => $r->getNombre(),
+            ];
+        }
+
+        return $this->json($data);
+    }
 }

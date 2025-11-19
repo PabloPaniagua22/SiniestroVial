@@ -1,16 +1,16 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}RolPersona index{% endblock %}
+{% block title %} Lista de Rol Persona {% endblock %}
 
 {% block body %}
-    <h1>RolPersona index</h1>
+    <h1>Lista de Rol Persona</h1>
 
     <table class="table">
         <thead>
             <tr>
                 <th>Id</th>
                 <th>Nombre</th>
-                <th>actions</th>
+                <th>acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -19,17 +19,17 @@
                 <td>{{ rol_persona.id }}</td>
                 <td>{{ rol_persona.nombre }}</td>
                 <td>
-                    <a href="{{ path('app_rol_persona_show', {'id': rol_persona.id}) }}">show</a>
-                    <a href="{{ path('app_rol_persona_edit', {'id': rol_persona.id}) }}">edit</a>
+                    <a href="{{ path('app_rol_persona_show', {'id': rol_persona.id}) }}">Ver</a>
+                    <a href="{{ path('app_rol_persona_edit', {'id': rol_persona.id}) }}">Editar</a>
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="3">no records found</td>
+                <td colspan="3">No hay registros encontrados</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('app_rol_persona_new') }}">Create new</a>
+    <a href="{{ path('app_rol_persona_new') }}">Crear nuevo</a>
 {% endblock %}

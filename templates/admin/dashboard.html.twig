@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Panel de Administrador{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1 class="mb-5 text-center">Bienvenido al Panel de Administración</h1>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 text-center">
+        <div class="col">
+            <a href="{{ path('app_usuario_index') }}" class="btn btn-primary btn-lg w-100 py-4 shadow-sm">
+                👤 <br> Gestionar Usuarios
+            </a>
+        </div>
+        <div class="col">
+            <a href="{{ path('app_siniestro_index') }}" class="btn btn-danger btn-lg w-100 py-4 shadow-sm">
+                🚨 <br> Gestionar Siniestros
+            </a>
+        </div>
+        <div class="col">
+            <a href="{{ path('app_vehiculo_index') }}" class="btn btn-secondary btn-lg w-100 py-4 shadow-sm">
+                🚗 <br> Gestionar Vehículos
+            </a>
+        </div>
+        <div class="col">
+            <a href="{{ path('app_persona_index') }}" class="btn btn-success btn-lg w-100 py-4 shadow-sm">
+                🧍 <br> Gestionar Personas
+            </a>
+        </div>
+        <div class="col">
+            <a href="{{ path('app_rol_persona_index') }}" class="btn btn-warning btn-lg w-100 py-4 shadow-sm">
+                🧩 <br> Gestionar Roles de Persona
+            </a>
+        </div>
+        <div class="col">
+            <a href="{{ path('app_detalle_siniestro_index') }}" class="btn btn-info btn-lg w-100 py-4 shadow-sm">
+                📄 <br> Gestionar Detalles de Siniestro
+            </a>
+        </div>
+        <div class="col">
+            <a href="{{ path('app_auditoria_index') }}" class="btn btn-light btn-lg w-100 py-4 shadow-sm">
+                📊 <br> Gestionar Auditoría
+            </a>
+        </div>
+        <div class="col">
+            <a href="{{ path('app_dashboard') }}" class="btn btn-primary btn-lg w-100 py-4 shadow-sm">
+                📊 <br> Ver Reportes
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

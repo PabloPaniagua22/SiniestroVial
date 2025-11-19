@@ -1,11 +1,70 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Siniestro{% endblock %}
+{% block title %}Nuevo Siniestro{% endblock %}
 
 {% block body %}
-    <h1>Create new Siniestro</h1>
+<h1>Crear nuevo siniestro</h1>
 
-    {{ include('siniestro/_form.html.twig') }}
+{{ form_start(form) }}
 
-    <a href="{{ path('app_siniestro_index') }}">back to list</a>
+<h3>Datos del siniestro</h3>
+{{ form_row(form.fecha) }}
+{{ form_row(form.hora) }}
+{{ form_row(form.descripcion) }}
+{{ form_row(form.estado) }}
+{{ form_row(form.severidad) }}
+{{ form_row(form.localidad) }}
+{{ form_row(form.calle) }}
+{{ form_row(form.coordenadas) }}
+{{ form_row(form.nroActa) }}
+{{ form_row(form.Usuario) }}
+
+<hr>
+
+<h3>Detalles del siniestro</h3>
+
+<div id="detalle-container"
+     data-prototype="{{ form_widget(form.detalleSiniestros.vars.prototype)|e('html_attr') }}">
+    {% for detalleForm in form.detalleSiniestros %}
+        <div class="card p-3 mb-3 border">
+            {{ form_row(detalleForm) }}
+            <button type="button" class="btn btn-danger eliminar">Eliminar</button>
+        </div>
+    {% endfor %}
+</div>
+
+<button type="button" id="add-detalle" class="btn btn-info my-3">➕ Agregar detalle</button>
+
+<button class="btn btn-success">Guardar</button>
+
+{{ form_end(form) }}
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const container = document.querySelector("#detalle-container");
+    const addBtn = document.querySelector("#add-detalle");
+
+    container.dataset.index = container.children.length;
+
+    addBtn.addEventListener("click", () => {
+        const index = container.dataset.index;
+        const prototype = container.dataset.prototype.replace(/__name__/g, index);
+
+        container.dataset.index++;
+
+        const div = document.createElement("div");
+        div.classList.add("card", "p-3", "mb-3", "border");
+        div.innerHTML = prototype + '<button type="button" class="btn btn-danger eliminar mt-2">Eliminar</button>';
+
+        container.appendChild(div);
+    });
+
+    container.addEventListener("click", e => {
+        if (e.target.classList.contains("eliminar")) {
+            e.target.closest(".card").remove();
+        }
+    });
+});
+</script>
+
 {% endblock %}

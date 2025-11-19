@@ -10,10 +10,20 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Entity\User;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 #[Route('/usuario')]
-final class UsuarioController extends AbstractController
-{
+    final class UsuarioController extends AbstractController
+    {
+
+    private $passwordHasher;
+
+    public function __construct(UserPasswordHasherInterface $passwordHasher)
+    {
+        $this->passwordHasher = $passwordHasher;
+    }
+
     #[Route(name: 'app_usuario_index', methods: ['GET'])]
     public function index(UsuarioRepository $usuarioRepository): Response
     {
@@ -30,6 +40,21 @@ final class UsuarioController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            // Crear entidad User asociada
+            $user = new User();
+            $user->setEmail($usuario->getEmail());
+            $user->setRoles([$usuario->getRol()]);
+
+            // Hashear la contraseña desde el campo del formulario Usuario
+            $hashedPassword = $this->passwordHasher->hashPassword($user, $usuario->getContrasena());
+            $user->setPassword($hashedPassword);
+            
+            // Vincular ambas entidades
+            $usuario->setUser($user);
+
+            // Persistir en base de datos
+            $entityManager->persist($user);
             $entityManager->persist($usuario);
             $entityManager->flush();
 
@@ -41,6 +66,7 @@ final class UsuarioController extends AbstractController
             'form' => $form,
         ]);
     }
+
 
     #[Route('/{id}', name: 'app_usuario_show', methods: ['GET'])]
     public function show(Usuario $usuario): Response

@@ -1,13 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Auditoria{% endblock %}
+{% block title %}Editar Auditoria{% endblock %}
 
 {% block body %}
-    <h1>Edit Auditoria</h1>
+    <h1>Editar Auditoria</h1>
 
-    {{ include('auditoria/_form.html.twig', {'button_label': 'Update'}) }}
+    {{ include('auditoria/_form.html.twig', {'button_label': 'Actualizar'}) }}
 
-    <a href="{{ path('app_auditoria_index') }}">back to list</a>
+    <a href="{{ path('app_auditoria_index') }}">Volver a la lista</a>
 
     {{ include('auditoria/_delete_form.html.twig') }}
 {% endblock %}

@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[Route('/detalle/siniestro')]
 final class DetalleSiniestroController extends AbstractController
@@ -30,10 +31,28 @@ final class DetalleSiniestroController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            /** @var UploadedFile $archivo */
+            $archivo = $form->get('rutaDocumento')->getData();
+
+            if ($archivo) {
+                // Crear nombre único
+                $nuevoNombre = uniqid().'.'.$archivo->guessExtension();
+
+                // Mover archivo a /public/uploads
+                $archivo->move(
+                    $this->getParameter('uploads_directory'),
+                    $nuevoNombre
+                );
+
+                // Guardar nombre del archivo en BD
+                $detalleSiniestro->setRutaDocumento($nuevoNombre);
+            }
+
             $entityManager->persist($detalleSiniestro);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_detalle_siniestro_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_detalle_siniestro_index');
         }
 
         return $this->render('detalle_siniestro/new.html.twig', [
@@ -41,6 +60,7 @@ final class DetalleSiniestroController extends AbstractController
             'form' => $form,
         ]);
     }
+
 
     #[Route('/{id}', name: 'app_detalle_siniestro_show', methods: ['GET'])]
     public function show(DetalleSiniestro $detalleSiniestro): Response
@@ -57,9 +77,25 @@ final class DetalleSiniestroController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            /** @var UploadedFile $archivo */
+            $archivo = $form->get('rutaDocumento')->getData();
+
+            if ($archivo) {
+                // Crear nombre único
+                $nuevoNombre = uniqid().'.'.$archivo->guessExtension();
+
+                $archivo->move(
+                    $this->getParameter('uploads_directory'),
+                    $nuevoNombre
+                );
+
+                $detalleSiniestro->setRutaDocumento($nuevoNombre);
+            }
+
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_detalle_siniestro_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_detalle_siniestro_index');
         }
 
         return $this->render('detalle_siniestro/edit.html.twig', [
@@ -71,7 +107,7 @@ final class DetalleSiniestroController extends AbstractController
     #[Route('/{id}', name: 'app_detalle_siniestro_delete', methods: ['POST'])]
     public function delete(Request $request, DetalleSiniestro $detalleSiniestro, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$detalleSiniestro->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $detalleSiniestro->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($detalleSiniestro);
             $entityManager->flush();
         }

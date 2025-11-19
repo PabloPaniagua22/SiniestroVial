@@ -5,37 +5,67 @@ namespace App\Form;
 use App\Entity\DetalleSiniestro;
 use App\Entity\Persona;
 use App\Entity\RolPersona;
-use App\Entity\Siniestro;
 use App\Entity\Vehiculo;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 
 class DetalleSiniestroType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('estadoAlcoholico')
-            ->add('porcentajeAlcohol')
-            ->add('observaciones')
-            ->add('rutaDocumento')
-            ->add('siniestro', EntityType::class, [
-                'class' => Siniestro::class,
-                'choice_label' => 'id',
+            ->add('persona', PersonaType::class, [
+                'label' => 'Datos de la Persona',
             ])
-            ->add('persona', EntityType::class, [
-                'class' => Persona::class,
-                'choice_label' => 'id',
+
+            ->add('vehiculo', VehiculoType::class, [
+                'label' => false,
             ])
+
             ->add('rolPersona', EntityType::class, [
                 'class' => RolPersona::class,
-                'choice_label' => 'id',
+                'choice_label' => 'nombre',
+                'placeholder' => 'Seleccione un rol',
+                'label' => 'Rol de la persona',
+                'attr' => ['class' => 'form-select']
             ])
-            ->add('vehiculo', EntityType::class, [
-                'class' => Vehiculo::class,
-                'choice_label' => 'id',
+
+            ->add('estadoAlcoholico', ChoiceType::class, [
+                'choices' => [
+                    'Negativo' => 'Negativo',
+                    'Positivo' => 'Positivo',
+                ],
+                'placeholder' => 'Seleccione un estado',
+                'label' => 'Estado alcohólico',
+                'attr' => ['class' => 'form-select']
+            ])
+
+            ->add('porcentajeAlcohol', NumberType::class, [
+                'label' => 'Porcentaje de alcohol (%)',
+                'required' => false,
+                'scale' => 2,
+                'attr' => [
+                    'class' => 'form-control',
+                    'min' => 0,
+                    'step' => 0.01,
+                ],
+            ])
+
+            ->add('observaciones', null, [
+                'label' => 'Observaciones',
+                'required' => false,
+                'attr' => ['class' => 'form-control']
+            ])
+
+            ->add('rutaDocumento', FileType::class, [
+                'label' => 'Documento (PDF o imagen)',
+                'mapped' => false,
+                'required' => false,
             ])
         ;
     }

@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Persona index{% endblock %}
+{% block title %}Lista de Persona{% endblock %}
 
 {% block body %}
-    <h1>Persona index</h1>
+    <h1>Lista de Persona</h1>
 
     <table class="table">
         <thead>
@@ -12,10 +12,10 @@
                 <th>Nombre</th>
                 <th>Apellido</th>
                 <th>Dni</th>
-                <th>FechaNacimiento</th>
+                <th>Fecha Nacimiento</th>
                 <th>Genero</th>
-                <th>EstadoCivil</th>
-                <th>actions</th>
+                <th>Estado Civil</th>
+                <th>acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -29,17 +29,17 @@
                 <td>{{ persona.genero }}</td>
                 <td>{{ persona.estadoCivil }}</td>
                 <td>
-                    <a href="{{ path('app_persona_show', {'id': persona.id}) }}">show</a>
-                    <a href="{{ path('app_persona_edit', {'id': persona.id}) }}">edit</a>
+                    <a href="{{ path('app_persona_show', {'id': persona.id}) }}">Ver</a>
+                    <a href="{{ path('app_persona_edit', {'id': persona.id}) }}">Editar</a>
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="8">no records found</td>
+                <td colspan="8">No hay registros encontrados</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('app_persona_new') }}">Create new</a>
+    <a href="{{ path('app_persona_new') }}">Crear nuevo</a>
 {% endblock %}

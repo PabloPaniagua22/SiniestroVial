@@ -1,4 +1,113 @@
 {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+
+<div class="card p-4 mb-4 shadow-sm">
+    <h3 class="mb-3">Datos del Siniestro</h3>
+
+    <div class="row g-3">
+        <div class="col-md-4">{{ form_row(form.fecha) }}</div>
+        <div class="col-md-4">{{ form_row(form.hora) }}</div>
+        <div class="col-md-4">{{ form_row(form.estado) }}</div>
+
+        <div class="col-md-6">{{ form_row(form.severidad) }}</div>
+        <div class="col-md-6">{{ form_row(form.Usuario) }}</div>
+
+        <div class="col-md-4">{{ form_row(form.localidad) }}</div>
+        <div class="col-md-4">{{ form_row(form.calle) }}</div>
+        <div class="col-md-4">{{ form_row(form.coordenadas) }}</div>
+
+        <div class="col-md-4">{{ form_row(form.nroActa) }}</div>
+    </div>
+</div>
+
+<hr>
+
+<div class="card p-4 shadow-sm mb-4">
+    <h3 class="mb-3">Detalles del Siniestro</h3>
+
+    <div id="detalle-container"
+         data-prototype="{{ form_widget(form.detalleSiniestros.vars.prototype)|e('html_attr') }}">
+
+        {% for detalleForm in form.detalleSiniestros %}
+            <div class="card p-3 mb-3 border rounded detalle-item">
+                <h5 class="text-primary mb-3">Detalle</h5>
+
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        {{ form_row(detalleForm.estadoAlcoholico) }}
+                    </div>
+                    <div class="col-md-4">
+                        {{ form_row(detalleForm.porcentajeAlcohol) }}
+                    </div>
+                    <div class="col-md-12">
+                        {{ form_row(detalleForm.observaciones) }}
+                    </div>
+
+                    <hr>
+
+                    <h5 class="text-secondary">Persona involucrada</h5>
+                    <div class="col-md-6">{{ form_row(detalleForm.persona) }}</div>
+                    <div class="col-md-6">{{ form_row(detalleForm.rolPersona) }}</div>
+
+                    <hr>
+
+                    <h5 class="text-secondary">Vehículo</h5>
+                    <div class="col-md-3">{{ form_row(detalleForm.vehiculo.tipo) }}</div>
+                    <div class="col-md-3">{{ form_row(detalleForm.vehiculo.patente) }}</div>
+                    <div class="col-md-3">{{ form_row(detalleForm.vehiculo.marca) }}</div>
+                    <div class="col-md-3">{{ form_row(detalleForm.vehiculo.modelo) }}</div>
+                    <div class="col-md-3">{{ form_row(detalleForm.vehiculo.anio) }}</div>
+                </div>
+
+                <button type="button" class="btn btn-danger mt-3 eliminar">
+                    ❌ Eliminar detalle
+                </button>
+            </div>
+        {% endfor %}
+    </div>
+
+    <button type="button" id="add-detalle" class="btn btn-info mt-3">
+        ➕ Agregar detalle
+    </button>
+</div>
+
+<button class="btn btn-success btn-lg">
+    💾 Guardar siniestro
+</button>
+
 {{ form_end(form) }}
+
+<script>
+// ===============================
+//  SCRIPT DE COLLECTION FORMS 
+// ===============================
+document.addEventListener("DOMContentLoaded", () => {
+    const container = document.getElementById("detalle-container");
+    const addBtn = document.getElementById("add-detalle");
+
+    container.dataset.index = container.children.length;
+
+    addBtn.addEventListener("click", () => {
+        const index = container.dataset.index;
+        container.dataset.index++;
+
+        const prototype = container.dataset.prototype.replace(/__name__/g, index);
+
+        const div = document.createElement("div");
+        div.classList.add("card", "p-3", "mb-3", "border", "detalle-item");
+
+        div.innerHTML = `
+            <h5 class="text-primary mb-3">Detalle</h5>
+            ${prototype}
+            <button type="button" class="btn btn-danger mt-3 eliminar">❌ Eliminar detalle</button>
+        `;
+
+        container.appendChild(div);
+    });
+
+    container.addEventListener("click", e => {
+        if (e.target.classList.contains("eliminar")) {
+            e.target.closest(".detalle-item").remove();
+        }
+    });
+});
+</script>

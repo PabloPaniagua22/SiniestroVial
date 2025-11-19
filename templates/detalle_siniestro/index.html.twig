@@ -1,19 +1,19 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}DetalleSiniestro index{% endblock %}
+{% block title %}Lista de Detalle Siniestro{% endblock %}
 
 {% block body %}
-    <h1>DetalleSiniestro index</h1>
+    <h1>Lista de Detalle Siniestro</h1>
 
     <table class="table">
         <thead>
             <tr>
                 <th>Id</th>
-                <th>EstadoAlcoholico</th>
-                <th>PorcentajeAlcohol</th>
+                <th>Estado Alcoholico</th>
+                <th>Porcentaje Alcohol</th>
                 <th>Observaciones</th>
-                <th>RutaDocumento</th>
-                <th>actions</th>
+                <th>Ruta Documento</th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -25,17 +25,17 @@
                 <td>{{ detalle_siniestro.observaciones }}</td>
                 <td>{{ detalle_siniestro.rutaDocumento }}</td>
                 <td>
-                    <a href="{{ path('app_detalle_siniestro_show', {'id': detalle_siniestro.id}) }}">show</a>
-                    <a href="{{ path('app_detalle_siniestro_edit', {'id': detalle_siniestro.id}) }}">edit</a>
+                    <a href="{{ path('app_detalle_siniestro_show', {'id': detalle_siniestro.id}) }}">Ver</a>
+                    <a href="{{ path('app_detalle_siniestro_edit', {'id': detalle_siniestro.id}) }}">Editar</a>
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="6">no records found</td>
+                <td colspan="6">No hay registros encontrados</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('app_detalle_siniestro_new') }}">Create new</a>
+    <a href="{{ path('app_detalle_siniestro_new') }}">Crear nuevo</a>
 {% endblock %}

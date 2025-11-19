@@ -49,13 +49,17 @@ class Siniestro
     /**
      * @var Collection<int, DetalleSiniestro>
      */
-    #[ORM\OneToMany(targetEntity: DetalleSiniestro::class, mappedBy: 'siniestro')]
+    #[ORM\OneToMany(
+        targetEntity: DetalleSiniestro::class,
+        mappedBy: 'siniestro',
+        cascade: ['persist', 'remove'],
+        orphanRemoval: true
+    )]
     private Collection $detalleSiniestros;
-
     /**
      * @var Collection<int, VehiculoSiniestro>
      */
-    #[ORM\OneToMany(targetEntity: VehiculoSiniestro::class, mappedBy: 'siniestro')]
+    #[ORM\OneToMany(targetEntity: VehiculoSiniestro::class, mappedBy: 'siniestro', cascade: ['persist', 'remove'])]
     private Collection $vehiculoSiniestros;
 
     public function __construct()

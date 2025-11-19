@@ -78,4 +78,19 @@ final class VehiculoController extends AbstractController
 
         return $this->redirectToRoute('app_vehiculo_index', [], Response::HTTP_SEE_OTHER);
     }
+    #[Route('/api/vehiculos', name: 'api_vehiculos', methods: ['GET'])]
+    public function apiVehiculos(VehiculoRepository $vehiculoRepo): Response
+    {
+        $vehiculos = $vehiculoRepo->findAll();
+        $data = [];
+
+        foreach ($vehiculos as $v) {
+            $data[] = [
+                'id' => $v->getId(),
+                'tipo' => $v->getTipo(),
+            ];
+        }
+
+        return $this->json($data);
+    }
 }

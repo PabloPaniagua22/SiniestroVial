@@ -23,17 +23,37 @@ final class SiniestroController extends AbstractController
     }
 
     #[Route('/new', name: 'app_siniestro_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
+    public function new(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        SiniestroRepository $siniestroRepository
+    ): Response {
+        
         $siniestro = new Siniestro();
+
+        // Genera nro de acta solo
+        $ultimo = $siniestroRepository->createQueryBuilder('s')
+            ->select('MAX(s.nroActa)')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        $nuevoNro = $ultimo ? intval($ultimo) + 1 : 1;
+
+        // Formato por ejemplo: 000001, 000002, etc
+        $siniestro->setNroActa(str_pad($nuevoNro, 6, '0', STR_PAD_LEFT));
+
         $form = $this->createForm(SiniestroType::class, $siniestro);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             $entityManager->persist($siniestro);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_siniestro_index', [], Response::HTTP_SEE_OTHER);
+            // 🔹 Redirigir a edición para agregar personas y detalles
+            return $this->redirectToRoute('app_siniestro_edit', [
+                'id' => $siniestro->getId()
+            ]);
         }
 
         return $this->render('siniestro/new.html.twig', [

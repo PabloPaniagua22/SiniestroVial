@@ -17,13 +17,13 @@ class DetalleSiniestro
     #[ORM\ManyToOne(inversedBy: 'detalleSiniestros')]
     private ?Siniestro $siniestro = null;
 
-    #[ORM\ManyToOne(inversedBy: 'detalleSiniestros')]
+    #[ORM\ManyToOne(inversedBy: 'detalleSiniestros', cascade: ['persist'])]
     private ?Persona $persona = null;
 
     #[ORM\ManyToOne(inversedBy: 'detalleSiniestros')]
     private ?RolPersona $rolPersona = null;
 
-    #[ORM\ManyToOne(inversedBy: 'detalleSiniestros')]
+    #[ORM\ManyToOne(inversedBy: 'detalleSiniestros', cascade: ['persist'])]
     private ?Vehiculo $vehiculo = null;
 
     #[ORM\Column(length: 255)]

@@ -28,15 +28,15 @@
                 <td>{{ vehiculo.modelo }}</td>
             </tr>
             <tr>
-                <th>Anio</th>
+                <th>Año</th>
                 <td>{{ vehiculo.anio }}</td>
             </tr>
         </tbody>
     </table>
 
-    <a href="{{ path('app_vehiculo_index') }}">back to list</a>
+    <a href="{{ path('app_vehiculo_index') }}">Volver a la lista</a>
 
-    <a href="{{ path('app_vehiculo_edit', {'id': vehiculo.id}) }}">edit</a>
+    <a href="{{ path('app_vehiculo_edit', {'id': vehiculo.id}) }}">Editar</a>
 
     {{ include('vehiculo/_delete_form.html.twig') }}
 {% endblock %}
